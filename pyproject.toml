@@ -7,6 +7,7 @@ authors = ["Bruce Cowan <bruce.cowan@strath.ac.uk>"]
 [tool.poetry.dependencies]
 python = "^3.9"
 h5py = "^3.8.0"
+natsort = "^8.2.0"
 
 [tool.poetry.dev-dependencies]
 black = "^23"

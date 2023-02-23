@@ -5,6 +5,7 @@ from types import TracebackType
 from typing import Dict, Union
 
 import h5py
+import natsort
 
 from .probe import Probe
 from .sequence import Sequence
@@ -25,10 +26,10 @@ class File:
         self._h5file = h5py.File(path, "r")
 
         try:
-            if self._h5file.attrs["TYPE"] != b"MFMC":
+            if self._h5file.attrs["TYPE"] != "MFMC":
                 raise ValueError("File type is invalid")
 
-            version = self._h5file.attrs["VERSION"].decode("ASCII")
+            version = self._h5file.attrs["VERSION"]
             if version != "2.0.0":
                 raise ValueError(f"Unsupported version: {version}")
         except KeyError:
@@ -56,10 +57,12 @@ class File:
 
     @property
     def probes(self) -> Dict[str, Probe]:
-        """A list of the probes defined in the file."""
-        return self._probes
+        """A collection of the probes defined in the file."""
+        keys = natsort.natsorted(self._probes.keys())
+        return {probe: self._probes[probe] for probe in keys}
 
     @property
     def sequences(self) -> Dict[str, Sequence]:
-        """A list of the sequences defined in the file."""
-        return self._sequences
+        """A collection of the sequences defined in the file."""
+        keys = natsort.natsorted(self._sequences.keys())
+        return {sequence: self._sequences[sequence] for sequence in keys}

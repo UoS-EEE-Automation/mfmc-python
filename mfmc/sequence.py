@@ -1,6 +1,7 @@
 from typing import Dict
 
 import h5py
+import natsort
 
 from .group import Group
 from .law import Law
@@ -41,7 +42,7 @@ class Sequence(Group):
         self._laws = {}
         for k, v in self._group.items():
             try:
-                if v.attrs["TYPE"] == b"LAW":
+                if v.attrs["TYPE"] == "LAW":
                     self._laws[k] = Law(v)
             except KeyError:
                 continue
@@ -49,4 +50,5 @@ class Sequence(Group):
     @property
     def laws(self) -> Dict[str, Law]:
         """List of law objects for the sequence."""
-        return self._laws
+        keys = natsort.natsorted(self._laws.keys())
+        return {law: self._laws[law] for law in keys}
