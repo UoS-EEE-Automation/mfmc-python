@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import os
+from types import TracebackType
 from typing import Dict, Union
 
 import h5py
@@ -33,16 +36,22 @@ class File:
 
         self._probes = {}
         for k, v in self._h5file.items():
-            if v.attrs["TYPE"] == b"PROBE":
+            if v.attrs["TYPE"] == "PROBE":
                 self._probes[k] = Probe(v)
 
         self._sequences = {}
         for k, v in self._h5file.items():
-            if v.attrs["TYPE"] == b"SEQUENCE":
+            if v.attrs["TYPE"] == "SEQUENCE":
                 self._sequences[k] = Sequence(v)
 
     def close(self) -> None:
         """Closes a MFMC file."""
+        self._h5file.close()
+
+    def __enter__(self) -> h5py.File:
+        return self._h5file
+
+    def __exit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: TracebackType | None) -> None:
         self._h5file.close()
 
     @property
