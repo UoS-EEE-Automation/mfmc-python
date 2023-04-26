@@ -1,1 +1,1 @@
-from .file import *
+from mfmc.file import File

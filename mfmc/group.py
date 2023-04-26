@@ -1,14 +1,13 @@
 from collections.abc import Mapping
 import itertools
-from typing import Any, ClassVar, Dict, List, Union
+from typing import Any, ClassVar, Dict, List
 
 import h5py
-import numpy as np
 
-from .exceptions import RequiredDatafieldError, OptionalDatafieldError
+from mfmc import exceptions
 
 
-class Group(Mapping[str, Union[str, np.ndarray]]):
+class Group(Mapping[str, Any]):
     """A dictionary-like representation of a HDF5 group.
 
     Datafield access is case-insensitive.
@@ -23,7 +22,7 @@ class Group(Mapping[str, Union[str, np.ndarray]]):
     # Instance attribute type definition
     _group: h5py.Group
 
-    def __getitem__(self, key: str) -> Union[str, np.ndarray]:
+    def __getitem__(self, key: str) -> Any:
         if not isinstance(key, str):
             raise TypeError("Datafield name must be a string")
 
@@ -38,9 +37,9 @@ class Group(Mapping[str, Union[str, np.ndarray]]):
                 raise KeyError(f"Unknown datafield name: {key}")
         except KeyError:
             if key in self._MANDATORY_DATASETS + self._MANDATORY_ATTRS:
-                raise RequiredDatafieldError(key)
+                raise exceptions.RequiredDatafieldError(key)
             elif key in self._OPTIONAL_DATASETS + self._OPTIONAL_ATTRS:
-                raise OptionalDatafieldError(key)
+                raise exceptions.OptionalDatafieldError(key)
 
     def __len__(self) -> int:
         return len(self._group) + len(self._group.attrs)
@@ -79,7 +78,10 @@ class Group(Mapping[str, Union[str, np.ndarray]]):
         if isinstance(data, bytes):
             return data.decode("ascii")
         elif isinstance(data, h5py.Dataset):
-            return data[()]
+            try:
+                return data[()].item()  # Try to return a scalar
+            except ValueError:
+                return data[()]
         else:
             return data
 
@@ -111,3 +113,7 @@ class Group(Mapping[str, Union[str, np.ndarray]]):
 
         for attr in cls._MANDATORY_ATTRS:
             group.attrs[attr] = None
+
+    @property
+    def hdf5_group(self) -> h5py.Group:
+        return self._group

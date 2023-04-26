@@ -1,9 +1,19 @@
+from __future__ import annotations
+
+import enum
+from typing import Any, Literal, overload
+
 import h5py
 
-from .group import Group
+from mfmc import group
 
 
-class Probe(Group):
+class ElementShape(enum.IntEnum):
+    RECTANGULAR = 1
+    ELLIPTICAL = 2
+
+
+class Probe(group.Group):
     _MANDATORY_DATASETS = [
         "ELEMENT_POSITION",
         "ELEMENT_MINOR",
@@ -28,10 +38,20 @@ class Probe(Group):
         "WEDGE_TAG",
     ]
 
-    def __init__(self, group: h5py.Group) -> None:
+    def __init__(self, grp: h5py.Group) -> None:
         """Representation of a probe from a MFMC file.
 
         Args:
-            group: The h5py group for the probe.
+            grp: The h5py group for the probe.
         """
-        self._group = group
+        self._group = grp
+
+    @overload
+    def __getitem__(self, item: Literal["element_shape"]) -> tuple[ElementShape]:
+        ...
+
+    def __getitem__(self, item: str) -> Any:
+        if item.lower() == "element_shape":
+            return tuple(ElementShape(e) for e in self.hdf5_group["ELEMENT_SHAPE"])
+        else:
+            return super().__getitem__(item)

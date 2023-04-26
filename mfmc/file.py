@@ -7,10 +7,7 @@ from typing import Dict, Union
 import h5py
 import natsort
 
-from .probe import Probe
-from .sequence import Sequence
-
-__all__ = ["File"]
+from mfmc import probe, sequence
 
 
 class File:
@@ -38,12 +35,12 @@ class File:
         self._probes = {}
         for k, v in self._h5file.items():
             if v.attrs["TYPE"] == "PROBE":
-                self._probes[k] = Probe(v)
+                self._probes[k] = probe.Probe(v)
 
         self._sequences = {}
         for k, v in self._h5file.items():
             if v.attrs["TYPE"] == "SEQUENCE":
-                self._sequences[k] = Sequence(v)
+                self._sequences[k] = sequence.Sequence(v)
 
     def close(self) -> None:
         """Closes a MFMC file."""
@@ -52,17 +49,22 @@ class File:
     def __enter__(self) -> h5py.File:
         return self._h5file
 
-    def __exit__(self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: TracebackType | None) -> None:
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
         self._h5file.close()
 
     @property
-    def probes(self) -> Dict[str, Probe]:
+    def probes(self) -> Dict[str, probe.Probe]:
         """A collection of the probes defined in the file."""
         keys = natsort.natsorted(self._probes.keys())
-        return {probe: self._probes[probe] for probe in keys}
+        return {probe: self._probes[p] for p in keys}
 
     @property
-    def sequences(self) -> Dict[str, Sequence]:
+    def sequences(self) -> Dict[str, sequence.Sequence]:
         """A collection of the sequences defined in the file."""
         keys = natsort.natsorted(self._sequences.keys())
-        return {sequence: self._sequences[sequence] for sequence in keys}
+        return {sequence: self._sequences[s] for s in keys}
