@@ -105,20 +105,20 @@ class Group(Mapping[str, Any]):
     @property
     def user_attributes(self) -> dict[str, Any]:
         """A dictionary with pairs of name and attribute values."""
-        ret = {}
-        for k, v in self._group.attrs.items():
-            if k not in self._MANDATORY_ATTRS + self._OPTIONAL_ATTRS:
-                ret[k] = self._decode_data(v)
-        return ret
+        return {
+            k: v
+            for k, v in self._group.attrs.items()
+            if k not in self._MANDATORY_ATTRS + self._OPTIONAL_ATTRS
+        }
 
     @property
     def user_datasets(self) -> dict[str, Any]:
         """A dictionary with pairs of name and dataset values."""
-        ret = {}
-        for k, v in self._group.items():
-            if k not in self._MANDATORY_DATASETS + self._OPTIONAL_DATASETS:
-                ret[k] = self._decode_data(v)
-        return ret
+        return {
+            k: v
+            for k, v in self._group.items()
+            if k not in self._MANDATORY_DATASETS + self._OPTIONAL_DATASETS
+        }
 
     @classmethod
     def create(cls, file: h5py.File, name: str) -> None:
