@@ -42,7 +42,7 @@ class Sequence(group.Group):
         "DATE_AND_TIME",
     ]
 
-    def __init__(self, grp: h5py.Group):
+    def __init__(self, grp: h5py.Group) -> None:
         """Representation of a sequence from a MFMC file.
 
         Args:

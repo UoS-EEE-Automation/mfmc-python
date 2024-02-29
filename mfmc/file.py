@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 from types import TracebackType
-from typing import Dict, Union
 
 import h5py
 import natsort
@@ -11,7 +10,7 @@ from mfmc import probe, sequence
 
 
 class File:
-    def __init__(self, path: Union[os.PathLike, str]) -> None:
+    def __init__(self, path: os.PathLike | str) -> None:
         """A wrapper for accessing an MFMC file.
 
         This enumerates the probes and sequences and laws which are contained in the
@@ -58,13 +57,13 @@ class File:
         self._h5file.close()
 
     @property
-    def probes(self) -> Dict[str, probe.Probe]:
+    def probes(self) -> dict[str, probe.Probe]:
         """A collection of the probes defined in the file."""
         keys = natsort.natsorted(self._probes.keys())
         return {probe: self._probes[p] for p in keys}
 
     @property
-    def sequences(self) -> Dict[str, sequence.Sequence]:
+    def sequences(self) -> dict[str, sequence.Sequence]:
         """A collection of the sequences defined in the file."""
         keys = natsort.natsorted(self._sequences.keys())
         return {sequence: self._sequences[s] for s in keys}

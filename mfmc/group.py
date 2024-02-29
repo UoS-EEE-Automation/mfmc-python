@@ -1,10 +1,12 @@
-from collections.abc import Mapping
+from collections.abc import Iterator, Mapping
 import itertools
-from typing import Any, ClassVar, Dict, List
+from typing import Any, ClassVar, overload, TypeVar
 
 import h5py
 
 from mfmc import exceptions
+
+_T = TypeVar("_T")
 
 
 class Group(Mapping[str, Any]):
@@ -14,10 +16,10 @@ class Group(Mapping[str, Any]):
     """
 
     # Class attributes, overridden in subclasses
-    _MANDATORY_DATASETS: ClassVar[List[str]] = None
-    _MANDATORY_ATTRS: ClassVar[List[str]] = None
-    _OPTIONAL_DATASETS: ClassVar[List[str]] = None
-    _OPTIONAL_ATTRS: ClassVar[List[str]] = None
+    _MANDATORY_DATASETS: ClassVar[list[str]] | None = None
+    _MANDATORY_ATTRS: ClassVar[list[str]] | None = None
+    _OPTIONAL_DATASETS: ClassVar[list[str]] | None = None
+    _OPTIONAL_ATTRS: ClassVar[list[str]] | None = None
 
     # Instance attribute type definition
     _group: h5py.Group
@@ -44,7 +46,7 @@ class Group(Mapping[str, Any]):
     def __len__(self) -> int:
         return len(self._group) + len(self._group.attrs)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Any]:
         return itertools.chain(self._group, self._group.attrs)
 
     @classmethod
@@ -74,6 +76,21 @@ class Group(Mapping[str, Any]):
         return item in cls._OPTIONAL_DATASETS + cls._OPTIONAL_ATTRS
 
     @staticmethod
+    @overload
+    def _decode_data(data: bytes) -> str:
+        ...
+
+    @staticmethod
+    @overload
+    def _decode_data(data: h5py.Dataset) -> float | h5py.Dataset:
+        ...
+
+    @staticmethod
+    @overload
+    def _decode_data(data: _T) -> _T:
+        ...
+
+    @staticmethod
     def _decode_data(data):
         if isinstance(data, bytes):
             return data.decode("ascii")
@@ -86,7 +103,7 @@ class Group(Mapping[str, Any]):
             return data
 
     @property
-    def user_attributes(self) -> Dict[str, Any]:
+    def user_attributes(self) -> dict[str, Any]:
         """A dictionary with pairs of name and attribute values."""
         ret = {}
         for k, v in self._group.attrs.items():
@@ -95,7 +112,7 @@ class Group(Mapping[str, Any]):
         return ret
 
     @property
-    def user_datasets(self) -> Dict[str, Any]:
+    def user_datasets(self) -> dict[str, Any]:
         """A dictionary with pairs of name and dataset values."""
         ret = {}
         for k, v in self._group.items():
