@@ -1,4 +1,4 @@
-class RequiredDatafieldError(KeyError):
+class MandatoryDatafieldError(KeyError):
     """A required datafield_name was not found.
 
     Args:
@@ -6,7 +6,7 @@ class RequiredDatafieldError(KeyError):
     """
 
     def __init__(self, name: str) -> None:
-        msg = f"Required datafield_name not found: {name}"
+        msg = f"Mandatory datafield_name not found: {name}"
         super().__init__(msg)
 
 

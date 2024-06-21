@@ -4,13 +4,12 @@ import os
 from types import TracebackType
 
 import h5py
-import natsort
 
-from mfmc import probe, sequence
+from mfmc import _probe, _sequence
 
 
 class File:
-    def __init__(self, path: os.PathLike | str) -> None:
+    def __init__(self, path: os.PathLike | str, group: str = "/") -> None:
         """A wrapper for accessing an MFMC file.
 
         This enumerates the probes and sequences and laws which are contained in the
@@ -18,7 +17,11 @@ class File:
 
         Args:
             path: The path of the MFMC file.
+            group: The path of the group in the HDF5 file.
         """
+
+        self.group = group  #: The path of the group in the HDF5 file.
+
         self._h5file = h5py.File(path, "r")
 
         try:
@@ -30,16 +33,6 @@ class File:
                 raise ValueError(f"Unsupported version: {version}")
         except KeyError:
             raise ValueError("File does not contain MFMC data")
-
-        self._probes = {}
-        for k, v in self._h5file.items():
-            if v.attrs["TYPE"] == "PROBE":
-                self._probes[k] = probe.Probe(v)
-
-        self._sequences = {}
-        for k, v in self._h5file.items():
-            if v.attrs["TYPE"] == "SEQUENCE":
-                self._sequences[k] = sequence.Sequence(v)
 
     def close(self) -> None:
         """Closes a MFMC file."""
@@ -57,13 +50,20 @@ class File:
         self._h5file.close()
 
     @property
-    def probes(self) -> dict[str, probe.Probe]:
-        """A collection of the probes defined in the file."""
-        keys = natsort.natsorted(self._probes.keys())
-        return {probe: self._probes[p] for p in keys}
+    def probes(self) -> dict[str, _probe.Probe]:
+        probes = {}
+        for k, v in self._h5file[self.group].items():
+            if v.attrs["TYPE"] == "PROBE":
+                probes[k] = _probe.Probe(v)
+
+        return dict(sorted(probes.items()))
 
     @property
-    def sequences(self) -> dict[str, sequence.Sequence]:
+    def sequences(self) -> dict[str, _sequence.Sequence]:
         """A collection of the sequences defined in the file."""
-        keys = natsort.natsorted(self._sequences.keys())
-        return {sequence: self._sequences[s] for s in keys}
+        sequences = {}
+        for k, v in self._h5file[self.group].items():
+            if v.attrs["TYPE"] == "SEQUENCE":
+                sequences[k] = _sequence.Sequence(v)
+
+        return dict(sorted(sequences.items()))

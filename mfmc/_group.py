@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 from collections.abc import Iterator, Mapping
 import itertools
 from typing import Any, ClassVar, overload, TypeVar
 
 import h5py
 
-from mfmc import exceptions
+from mfmc import _exceptions
 
 _T = TypeVar("_T")
 
@@ -16,15 +18,23 @@ class Group(Mapping[str, Any]):
     """
 
     # Class attributes, overridden in subclasses
-    _MANDATORY_DATASETS: ClassVar[list[str]] | None = None
-    _MANDATORY_ATTRS: ClassVar[list[str]] | None = None
-    _OPTIONAL_DATASETS: ClassVar[list[str]] | None = None
-    _OPTIONAL_ATTRS: ClassVar[list[str]] | None = None
+    _MANDATORY_DATASETS: ClassVar[tuple[str]] | None = None
+    _MANDATORY_ATTRS: ClassVar[tuple[str]] | None = None
+    _OPTIONAL_DATASETS: ClassVar[tuple[str]] | None = None
+    _OPTIONAL_ATTRS: ClassVar[tuple[str]] | None = None
 
     # Instance attribute type definition
     _group: h5py.Group
 
     def __getitem__(self, key: str) -> Any:
+        """Get data from the group.
+
+        Parameters:
+            key: Case-insensitive field name.
+
+        Returns:
+            The data.
+        """
         if not isinstance(key, str):
             raise TypeError("Datafield name must be a string")
 
@@ -39,9 +49,9 @@ class Group(Mapping[str, Any]):
                 raise KeyError(f"Unknown datafield name: {key}")
         except KeyError:
             if key in self._MANDATORY_DATASETS + self._MANDATORY_ATTRS:
-                raise exceptions.RequiredDatafieldError(key)
+                raise _exceptions.MandatoryDatafieldError(key)
             elif key in self._OPTIONAL_DATASETS + self._OPTIONAL_ATTRS:
-                raise exceptions.OptionalDatafieldError(key)
+                raise _exceptions.OptionalDatafieldError(key)
 
     def __len__(self) -> int:
         return len(self._group) + len(self._group.attrs)
@@ -77,34 +87,29 @@ class Group(Mapping[str, Any]):
 
     @staticmethod
     @overload
-    def _decode_data(data: bytes) -> str:
-        ...
+    def _decode_data(data: bytes) -> str: ...
 
     @staticmethod
     @overload
-    def _decode_data(data: h5py.Dataset) -> float | h5py.Dataset:
-        ...
+    def _decode_data(data: h5py.Dataset) -> h5py.Dataset: ...
 
     @staticmethod
     @overload
-    def _decode_data(data: _T) -> _T:
-        ...
+    def _decode_data(data: _T) -> _T: ...
 
     @staticmethod
     def _decode_data(data):
         if isinstance(data, bytes):
             return data.decode("ascii")
-        elif isinstance(data, h5py.Dataset):
-            try:
-                return data[()].item()  # Try to return a scalar
-            except ValueError:
-                return data[()]
         else:
             return data
 
     @property
     def user_attributes(self) -> dict[str, Any]:
-        """A dictionary with pairs of name and attribute values."""
+        """A dictionary with pairs of name and attribute values.
+
+        Names are case-sensitive.
+        """
         return {
             k: v
             for k, v in self._group.attrs.items()
@@ -113,24 +118,12 @@ class Group(Mapping[str, Any]):
 
     @property
     def user_datasets(self) -> dict[str, Any]:
-        """A dictionary with pairs of name and dataset values."""
+        """A dictionary with pairs of name and dataset values.
+
+        Names are case-sensitive.
+        """
         return {
             k: v
             for k, v in self._group.items()
             if k not in self._MANDATORY_DATASETS + self._OPTIONAL_DATASETS
         }
-
-    @classmethod
-    def create(cls, file: h5py.File, name: str) -> None:
-        """Create a group containing the required datasets and attributes."""
-        group = file.create_group(name)
-
-        for dataset_name in cls._MANDATORY_DATASETS:
-            group.create_dataset(dataset_name)
-
-        for attr in cls._MANDATORY_ATTRS:
-            group.attrs[attr] = None
-
-    @property
-    def hdf5_group(self) -> h5py.Group:
-        return self._group

@@ -1,11 +1,10 @@
-import definitions
+import pathlib
+
 import mfmc
 
 
 if __name__ == "__main__":
-    f = mfmc.File(
-        definitions.PROJECT_ROOT / "tests" / "StainlessTest_500-4500_45dB.mfmc"
-    )
+    f = mfmc.File(pathlib.Path(__file__).parent / "StainlessTest_500-4500_45dB.mfmc")
 
     probe = f.probes["PROBE<1>"]
     sequence = f.sequences["SEQUENCE<1>"]
