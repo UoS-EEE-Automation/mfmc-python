@@ -32,12 +32,8 @@ class Group(Mapping[str, Any]):
         self._optional_datasets = tuple()
         self._optional_attributes = tuple()
 
-        for element_type in config:
-            setattr(
-                self,
-                f"_{element_type}",
-                itertools.chain.from_iterable(config[element_type]),
-            )
+        for k, v in config.items():
+            setattr(self, f"_{k}", v.keys())
 
     def __getitem__(self, key: str) -> Any:
         """Get data from the group.
