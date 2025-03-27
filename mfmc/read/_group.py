@@ -23,21 +23,26 @@ class Group(Mapping[str, Any]):
     _group: h5py.Group
 
     def __init__(self) -> None:
-        config_path = pathlib.Path(__file__).parent.parent / "types.yml"
+        config_path = pathlib.Path(__file__).parent.parent / "format.yml"
         with open(config_path) as f:
             config = yaml.safe_load(f)[type(self).__name__.lower()]
 
-        self._mandatory_datasets = tuple()
-        self._mandatory_attributes = tuple()
-        self._optional_datasets = tuple()
-        self._optional_attributes = tuple()
+        self._mandatory_datasets = []
+        self._mandatory_attributes = []
+        self._optional_datasets = []
+        self._optional_attributes = []
 
-        for element_type in config:
-            setattr(
-                self,
-                f"_{element_type}",
-                itertools.chain.from_iterable(config[element_type]),
-            )
+        for name, metadata in config.items():
+            if metadata["mandatory"]:
+                if metadata["dataset"]:
+                    self._mandatory_datasets.append(name)
+                else:
+                    self._mandatory_attributes.append(name)
+            else:
+                if metadata["dataset"]:
+                    self._optional_datasets.append(name)
+                else:
+                    self._optional_attributes.append(name)
 
     def __getitem__(self, key: str) -> Any:
         """Get data from the group.
