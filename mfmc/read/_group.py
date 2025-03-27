@@ -47,20 +47,24 @@ class Group(Mapping[str, Any]):
         key = key.upper()
 
         try:
-            if key in itertools.chain(self._mandatory_datasets
-                                      ,self._optional_datasets):
+            if key in itertools.chain(
+                self._mandatory_datasets, self._optional_datasets
+            ):
                 return self._decode_data(self._group[key])
-            elif key in itertools.chain(self._mandatory_attributes,
-                  self._optional_attributes):
+            elif key in itertools.chain(
+                self._mandatory_attributes, self._optional_attributes
+            ):
                 return self._decode_data(self._group.attrs[key])
             else:
                 raise KeyError(f"Unknown datafield name: {key}")
         except KeyError:
-            if key in itertools.chain(self._mandatory_datasets,
-                    self._mandatory_attributes):
+            if key in itertools.chain(
+                self._mandatory_datasets, self._mandatory_attributes
+            ):
                 raise _exceptions.MandatoryDatafieldError(key)
-            elif key in itertools.chain(self._optional_datasets,
-                  self._optional_attributes):
+            elif key in itertools.chain(
+                self._optional_datasets, self._optional_attributes
+            ):
                 raise _exceptions.OptionalDatafieldError(key)
 
     def __len__(self) -> int:
