@@ -5,10 +5,10 @@ from types import TracebackType
 
 import h5py
 
-from mfmc import _probe, _sequence
+from mfmc.read import probe, sequence
 
 
-class File:
+class FileReader:
     def __init__(self, path: os.PathLike | str, group: str = "/") -> None:
         """A wrapper for accessing an MFMC file.
 
@@ -50,20 +50,20 @@ class File:
         self._h5file.close()
 
     @property
-    def probes(self) -> dict[str, _probe.Probe]:
+    def probes(self) -> dict[str, probe.Probe]:
         probes = {}
         for k, v in self._h5file[self.group].items():
             if v.attrs["TYPE"] == "PROBE":
-                probes[k] = _probe.Probe(v)
+                probes[k] = probe.Probe(v)
 
         return dict(sorted(probes.items()))
 
     @property
-    def sequences(self) -> dict[str, _sequence.Sequence]:
+    def sequences(self) -> dict[str, sequence.Sequence]:
         """A collection of the sequences defined in the file."""
         sequences = {}
         for k, v in self._h5file[self.group].items():
             if v.attrs["TYPE"] == "SEQUENCE":
-                sequences[k] = _sequence.Sequence(v)
+                sequences[k] = sequence.Sequence(v)
 
         return dict(sorted(sequences.items()))

@@ -1,0 +1,60 @@
+law:
+  mandatory_datasets:
+    - PROBE
+    - ELEMENT
+  mandatory_attributes:
+    - TYPE
+  optional_datasets:
+    - DELAY
+    - WEIGHTING
+  optional_attributes:
+probe:
+  mandatory_datasets:
+    - ELEMENT_POSITION
+    - ELEMENT_MINOR
+    - ELEMENT_MAJOR
+    - ELEMENT_SHAPE
+  mandatory_attributes:
+    - TYPE
+    - CENTRE_FREQUENCY
+  optional_datasets:
+    - ELEMENT_RADIUS_OF_CURVATURE
+    - ELEMENT_AXIS_OF_CURVATURE
+    - DEAD_ELEMENT
+  optional_attributes:
+    - WEDGE_SURFACE_POINT
+    - WEDGE_SURFACE_NORMAL
+    - BANDWIDTH
+    - PROBE_MANUFACTURER
+    - PROBE_SERIAL_NUMBER
+    - PROBE_TAG
+    - WEDGE_MANUFACTURER
+    - WEDGE_SERIAL_NUMBER
+    - WEDGE_TAG
+sequence:
+  mandatory_datasets:
+    - MFMC_DATA
+    - PROBE_PLACEMENT_INDEX
+    - PROBE_POSITION
+    - PROBE_X_DIRECTION
+    - PROBE_Y_DIRECTION
+    - TRANSMIT_LAW
+    - RECEIVE_LAW
+    - PROBE_LIST
+  mandatory_attributes:
+    - TYPE
+    - TIME_STEP
+    - START_TIME
+    - SPECIMEN_VELOCITY
+  optional_datasets:
+    - MFMC_DATA_IM
+    - DAC_CURVE
+  optional_attributes:
+    - WEDGE_VELOCITY
+    - TAG
+    - RECEIVER_AMPLIFIER_GAIN
+    - FILTER_TYPE
+    - FILTER_PARAMETERS
+    - FILTER_DESCRIPTION
+    - OPERATOR
+    - DATE_AND_TIME

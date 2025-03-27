@@ -2,9 +2,11 @@ from __future__ import annotations
 
 from collections.abc import Iterator, Mapping
 import itertools
-from typing import Any, ClassVar, overload, TypeVar
+import pathlib
+from typing import Any, overload, TypeVar
 
 import h5py
+import yaml
 
 from mfmc import _exceptions
 
@@ -17,14 +19,18 @@ class Group(Mapping[str, Any]):
     Datafield access is case-insensitive.
     """
 
-    # Class attributes, overridden in subclasses
-    _MANDATORY_DATASETS: ClassVar[tuple[str]] | None = None
-    _MANDATORY_ATTRS: ClassVar[tuple[str]] | None = None
-    _OPTIONAL_DATASETS: ClassVar[tuple[str]] | None = None
-    _OPTIONAL_ATTRS: ClassVar[tuple[str]] | None = None
-
     # Instance attribute type definition
     _group: h5py.Group
+
+    def __init__(self) -> None:
+        config_path = pathlib.Path(__file__).parent.parent / "types.yml"
+        with open(config_path) as f:
+            config = yaml.safe_load(f)[type(self).__name__.lower()]
+
+            self._mandatory_datasets = config["mandatory_datasets"]
+            self._mandatory_attributes = config["mandatory_attributes"]
+            self._optional_datasets = config["optional_datasets"]
+            self._optional_attributes = config["optional_attributes"]
 
     def __getitem__(self, key: str) -> Any:
         """Get data from the group.
@@ -41,16 +47,20 @@ class Group(Mapping[str, Any]):
         key = key.upper()
 
         try:
-            if key in self._MANDATORY_DATASETS + self._OPTIONAL_DATASETS:
+            if key in itertools.chain(self._mandatory_datasets
+                                      ,self._optional_datasets):
                 return self._decode_data(self._group[key])
-            elif key in self._MANDATORY_ATTRS + self._OPTIONAL_ATTRS:
+            elif key in itertools.chain(self._mandatory_attributes,
+                  self._optional_attributes):
                 return self._decode_data(self._group.attrs[key])
             else:
                 raise KeyError(f"Unknown datafield name: {key}")
         except KeyError:
-            if key in self._MANDATORY_DATASETS + self._MANDATORY_ATTRS:
+            if key in itertools.chain(self._mandatory_datasets,
+                    self._mandatory_attributes):
                 raise _exceptions.MandatoryDatafieldError(key)
-            elif key in self._OPTIONAL_DATASETS + self._OPTIONAL_ATTRS:
+            elif key in itertools.chain(self._optional_datasets,
+                  self._optional_attributes):
                 raise _exceptions.OptionalDatafieldError(key)
 
     def __len__(self) -> int:
@@ -59,8 +69,7 @@ class Group(Mapping[str, Any]):
     def __iter__(self) -> Iterator[Any]:
         return itertools.chain(self._group, self._group.attrs)
 
-    @classmethod
-    def is_mandatory(cls, datafield_name: str) -> bool:
+    def is_mandatory(self, datafield_name: str) -> bool:
         """Checks if a datafield name is mandatory.
 
         Args:
@@ -70,10 +79,9 @@ class Group(Mapping[str, Any]):
             Whether the datafield name is mandatory.
         """
         item = datafield_name.upper()
-        return item in cls._MANDATORY_DATASETS + cls._MANDATORY_ATTRS
+        return item in self._mandatory_datasets + self._mandatory_attributes
 
-    @classmethod
-    def is_optional(cls, datafield_name: str) -> bool:
+    def is_optional(self, datafield_name: str) -> bool:
         """Checks if a datafield name is optional.
 
         Args:
@@ -83,7 +91,7 @@ class Group(Mapping[str, Any]):
             Whether the datafield_name is optional.
         """
         item = datafield_name.upper()
-        return item in cls._OPTIONAL_DATASETS + cls._OPTIONAL_ATTRS
+        return item in self._optional_datasets + self._optional_attributes
 
     @staticmethod
     @overload
@@ -105,18 +113,6 @@ class Group(Mapping[str, Any]):
             return data
 
     @property
-    def user_attributes(self) -> dict[str, Any]:
-        """A dictionary with pairs of name and attribute values.
-
-        Names are case-sensitive.
-        """
-        return {
-            k: v
-            for k, v in self._group.attrs.items()
-            if k not in self._MANDATORY_ATTRS + self._OPTIONAL_ATTRS
-        }
-
-    @property
     def user_datasets(self) -> dict[str, Any]:
         """A dictionary with pairs of name and dataset values.
 
@@ -125,5 +121,17 @@ class Group(Mapping[str, Any]):
         return {
             k: v
             for k, v in self._group.items()
-            if k not in self._MANDATORY_DATASETS + self._OPTIONAL_DATASETS
+            if k not in self._mandatory_datasets + self._optional_datasets
+        }
+
+    @property
+    def user_attributes(self) -> dict[str, Any]:
+        """A dictionary with pairs of name and attribute values.
+
+        Names are case-sensitive.
+        """
+        return {
+            k: v
+            for k, v in self._group.attrs.items()
+            if k not in self._mandatory_attributes + self._optional_attributes
         }
