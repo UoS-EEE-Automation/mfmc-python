@@ -27,10 +27,17 @@ class Group(Mapping[str, Any]):
         with open(config_path) as f:
             config = yaml.safe_load(f)[type(self).__name__.lower()]
 
-            self._mandatory_datasets = config["mandatory_datasets"]
-            self._mandatory_attributes = config["mandatory_attributes"]
-            self._optional_datasets = config["optional_datasets"]
-            self._optional_attributes = config["optional_attributes"]
+        self._mandatory_datasets = tuple()
+        self._mandatory_attributes = tuple()
+        self._optional_datasets = tuple()
+        self._optional_attributes = tuple()
+
+        for element_type in config:
+            setattr(
+                self,
+                f"_{element_type}",
+                itertools.chain.from_iterable(config[element_type]),
+            )
 
     def __getitem__(self, key: str) -> Any:
         """Get data from the group.

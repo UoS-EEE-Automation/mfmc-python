@@ -1,60 +1,59 @@
 law:
   mandatory_datasets:
-    - PROBE
-    - ELEMENT
+    - PROBE: npt.NDArray
+    - ELEMENT: npt.NDArray
   mandatory_attributes:
-    - TYPE
+    - TYPE: str
   optional_datasets:
-    - DELAY
-    - WEIGHTING
-  optional_attributes:
+    - DELAY: npt.NDArray
+    - WEIGHTING: npt.NDArray
 probe:
   mandatory_datasets:
-    - ELEMENT_POSITION
-    - ELEMENT_MINOR
-    - ELEMENT_MAJOR
-    - ELEMENT_SHAPE
+    - ELEMENT_POSITION: npt.NDArray
+    - ELEMENT_MINOR: npt.NDArray
+    - ELEMENT_MAJOR: npt.NDArray
+    - ELEMENT_SHAPE: npt.NDArray
   mandatory_attributes:
-    - TYPE
-    - CENTRE_FREQUENCY
+    - TYPE: str
+    - CENTRE_FREQUENCY: float
   optional_datasets:
-    - ELEMENT_RADIUS_OF_CURVATURE
-    - ELEMENT_AXIS_OF_CURVATURE
-    - DEAD_ELEMENT
+    - ELEMENT_RADIUS_OF_CURVATURE: npt.NDArray
+    - ELEMENT_AXIS_OF_CURVATURE: npt.NDArray
+    - DEAD_ELEMENT: npt.NDArray
   optional_attributes:
-    - WEDGE_SURFACE_POINT
-    - WEDGE_SURFACE_NORMAL
-    - BANDWIDTH
-    - PROBE_MANUFACTURER
-    - PROBE_SERIAL_NUMBER
-    - PROBE_TAG
-    - WEDGE_MANUFACTURER
-    - WEDGE_SERIAL_NUMBER
-    - WEDGE_TAG
+    - WEDGE_SURFACE_POINT: npt.NDArray
+    - WEDGE_SURFACE_NORMAL: npt.NDArray
+    - BANDWIDTH: float
+    - PROBE_MANUFACTURER: str
+    - PROBE_SERIAL_NUMBER: str
+    - PROBE_TAG: str
+    - WEDGE_MANUFACTURER: str
+    - WEDGE_SERIAL_NUMBER: str
+    - WEDGE_TAG: str
 sequence:
   mandatory_datasets:
-    - MFMC_DATA
-    - PROBE_PLACEMENT_INDEX
-    - PROBE_POSITION
-    - PROBE_X_DIRECTION
-    - PROBE_Y_DIRECTION
-    - TRANSMIT_LAW
-    - RECEIVE_LAW
-    - PROBE_LIST
+    - MFMC_DATA: npt.NDArray
+    - PROBE_PLACEMENT_INDEX: npt.NDArray
+    - PROBE_POSITION: npt.NDArray
+    - PROBE_X_DIRECTION: npt.NDArray
+    - PROBE_Y_DIRECTION: npt.NDArray
+    - TRANSMIT_LAW: list[Law]
+    - RECEIVE_LAW: list[Law]
+    - PROBE_LIST: list[Probe]
   mandatory_attributes:
-    - TYPE
-    - TIME_STEP
-    - START_TIME
-    - SPECIMEN_VELOCITY
+    - TYPE: str
+    - TIME_STEP: float
+    - START_TIME: float
+    - SPECIMEN_VELOCITY: npt.NDArray
   optional_datasets:
-    - MFMC_DATA_IM
-    - DAC_CURVE
+    - MFMC_DATA_IM: npt.NDArray
+    - DAC_CURVE: npt.NDArray
   optional_attributes:
-    - WEDGE_VELOCITY
-    - TAG
-    - RECEIVER_AMPLIFIER_GAIN
-    - FILTER_TYPE
-    - FILTER_PARAMETERS
-    - FILTER_DESCRIPTION
-    - OPERATOR
-    - DATE_AND_TIME
+    - WEDGE_VELOCITY: npt.NDArray
+    - TAG: str
+    - RECEIVER_AMPLIFIER_GAIN: float
+    - FILTER_TYPE: int
+    - FILTER_PARAMETERS: npt.NDArray
+    - FILTER_DESCRIPTION: str
+    - OPERATOR: str
+    - DATE_AND_TIME: str
