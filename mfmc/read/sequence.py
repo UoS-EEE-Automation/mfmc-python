@@ -71,7 +71,7 @@ class Sequence(_group.Group):
 
     def __getitem__(self, item: str):
         match item.upper():
-            case "TRANSMITlaw" | "RECEIVElaw" as field_name:
+            case "TRANSMIT_LAW" | "RECEIVE_LAW" as field_name:
                 return tuple(law.Law(l) for l in self._group[field_name])
             case "PROBE_LIST":
                 return tuple(probe.Probe(p) for p in self._group["PROBE_LIST"])
