@@ -123,6 +123,8 @@ class Sequence(_group.Group):
             return max_
         elif dtype.kind == "i":
             return max(-min_, max_)
+        else:
+            raise NotImplementedError("Invalid data type")
 
     def get_ascan(self, index: int, normalise: bool = False) -> _types.AScan:
         data = self["mfmc_data"][:, index, :]

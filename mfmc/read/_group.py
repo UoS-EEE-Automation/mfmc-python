@@ -78,6 +78,7 @@ class Group(Mapping[str, Any]):
                 self._optional_datasets, self._optional_attributes
             ):
                 raise _exceptions.OptionalDatafieldError(key)
+            return None
 
     def __len__(self) -> int:
         return len(self._group) + len(self._group.attrs)

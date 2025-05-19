@@ -1,6 +1,5 @@
 from collections.abc import Mapping
 import dataclasses
-import itertools
 import pathlib
 
 import yaml
