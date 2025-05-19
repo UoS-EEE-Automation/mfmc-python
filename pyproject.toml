@@ -2,7 +2,7 @@
 authors = [
     {name = "Bruce Cowan", email = "bruce.cowan@strath.ac.uk"},
 ]
-requires-python = ">=3.10,<4.0"
+requires-python = ">=3.12,<4.0"
 name = "mfmc"
 version = "0.1.alpha"
 description = "A Python package for the MFMC ultrasound data format"
@@ -21,4 +21,4 @@ dev = [
 ]
 
 [tool.black]
-target-version = ["py310"]
+target-version = ["py312"]

@@ -3,14 +3,12 @@ from __future__ import annotations
 from collections.abc import Iterator, Mapping
 import itertools
 import pathlib
-from typing import Any, overload, TypeVar
+from typing import Any, overload
 
 import h5py
 import yaml
 
 from mfmc import _exceptions
-
-_T = TypeVar("_T")
 
 
 class Group(Mapping[str, Any]):
@@ -120,7 +118,7 @@ class Group(Mapping[str, Any]):
 
     @staticmethod
     @overload
-    def _decode_data(data: _T) -> _T: ...
+    def _decode_data[T](data: T) -> T: ...
 
     @staticmethod
     def _decode_data(data):
