@@ -4,7 +4,7 @@ import mfmc
 
 
 if __name__ == "__main__":
-    f = mfmc.read.FileReader(pathlib.Path(__file__).parent /
+    f = mfmc.FileReader(pathlib.Path(__file__).parent /
                       "StainlessTest_500-4500_45dB.mfmc")
 
     probe = f.probes["PROBE<1>"]
