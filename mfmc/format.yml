@@ -1,0 +1,171 @@
+probe:
+  ELEMENT_POSITION:
+    type: npt.NDArray
+    mandatory: true
+    dataset: true
+  ELEMENT_MINOR:
+    type: npt.NDArray
+    mandatory: true
+    dataset: true
+  ELEMENT_MAJOR:
+    type: npt.NDArray
+    mandatory: true
+    dataset: true
+  ELEMENT_SHAPE:
+    type: npt.NDArray
+    mandatory: true
+    dataset: true
+  ELEMENT_RADIUS_OF_CURVATURE:
+    type: npt.NDArray
+    mandatory: false
+    dataset: true
+  ELEMENT_AXIS_OF_CURVATURE:
+    type: npt.NDArray
+    mandatory: false
+    dataset: true
+  WEDGE_SURFACE_POINT:
+    type: npt.NDArray
+    mandatory: false
+    dataset: false
+  WEDGE_SURFACE_NORMAL:
+    type: npt.NDArray
+    mandatory: false
+    dataset: false
+  DEAD_ELEMENT:
+    type: npt.NDArray
+    mandatory: false
+    dataset: true
+  CENTRE_FREQUENCY:
+    type: float
+    mandatory: true
+    dataset: false
+  BANDWIDTH:
+    type: float
+    mandatory: false
+    dataset: false
+  PROBE_MANUFACTURER:
+    type: str
+    mandatory: false
+    dataset: false
+  PROBE_SERIAL_NUMBER:
+    type: str
+    mandatory: false
+    dataset: false
+  PROBE_TAG:
+    type: str
+    mandatory: false
+    dataset: false
+  WEDGE_MANUFACTURER:
+    type: str
+    mandatory: false
+    dataset: false
+  WEDGE_SERIAL_NUMBER:
+    type: str
+    mandatory: false
+    dataset: false
+  WEDGE_TAG:
+    type: str
+    mandatory: false
+    dataset: false
+sequence:
+  MFMC_DATA:
+    type: npt.NDArray
+    mandatory: true
+    dataset: true
+  MFMC_DATA_IM:
+    type: npt.NDArray
+    mandatory: false
+    dataset: true
+  PROBE_PLACEMENT_INDEX:
+    type: npt.NDArray
+    mandatory: true
+    dataset: true
+  PROBE_POSITION:
+    type: npt.NDArray
+    mandatory: true
+    dataset: true
+  PROBE_X_DIRECTION:
+    type: npt.NDArray
+    mandatory: true
+    dataset: true
+  PROBE_Y_DIRECTION:
+    type: npt.NDArray
+    mandatory: true
+    dataset: true
+  TRANSMIT_LAW:
+    type: Law
+    mandatory: true
+    dataset: true
+  RECEIVE_LAW:
+    type: Law
+    mandatory: true
+    dataset: true
+  PROBE_LIST:
+    type: list[Probe]
+    mandatory: true
+    dataset: true
+  TIME_STEP:
+    type: float
+    mandatory: true
+    dataset: false
+  START_TIME:
+    type: float
+    mandatory: true
+    dataset: false
+  SPECIMEN_VELOCITY:
+    type: npt.NDArray
+    mandatory: true
+    dataset: false
+  WEDGE_VELOCITY:
+    type: npt.NDArray
+    mandatory: false
+    dataset: false
+  TAG:
+    type: str
+    mandatory: false
+    dataset: false
+  DAC_CURVE:
+    type: npt.NDArray
+    mandatory: false
+    dataset: true
+  RECEIVER_AMPLIFIER_GAIN:
+    type: float
+    mandatory: false
+    dataset: false
+  FILTER_TYPE:
+    type: int
+    mandatory: false
+    dataset: false
+  FILTER_PARAMETERS:
+    type: npt.NDArray
+    mandatory: false
+    dataset: false
+  FILTER_DESCRIPTION:
+    type: str
+    mandatory: false
+    dataset: false
+  OPERATOR:
+    type: str
+    mandatory: false
+    dataset: false
+  DATE_AND_TIME:
+    type: str
+    mandatory: false
+    dataset: false
+law:
+  PROBE:
+    type: list[Probe]
+    mandatory: true
+    dataset: true
+  ELEMENT:
+    type: npt.NDArray
+    mandatory: true
+    dataset: true
+  DELAY:
+    type: npt.NDArray
+    mandatory: false
+    dataset: true
+  WEIGHTING:
+    type: npt.NDArray
+    mandatory: false
+    dataset: true
