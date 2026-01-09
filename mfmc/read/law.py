@@ -1,4 +1,4 @@
-from typing import Any, Literal, overload
+from typing import Any, Literal, cast, overload
 
 import h5py
 
@@ -25,6 +25,6 @@ class Law(_group.Group):
 
     def __getitem__(self, key):
         if key.upper() == "PROBE":
-            return tuple(probe.Probe(p) for p in self._group["PROBE"])
+            return tuple(probe.Probe(p) for p in cast(h5py.Group, self._group["PROBE"]))
 
         return super().__getitem__(key)

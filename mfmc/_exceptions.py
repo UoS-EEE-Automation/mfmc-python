@@ -1,3 +1,9 @@
+class MFMCFileError(Exception):
+    """An error with the file itself."""
+
+    pass
+
+
 class MandatoryDatafieldError(KeyError):
     """A required datafield was not found.
 

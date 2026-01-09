@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import enum
-from typing import Any, Literal, overload
+from typing import Any, Literal, cast, overload
 
 import h5py
 import numpy as np
@@ -40,9 +40,11 @@ class Probe(_group.Group):
 
     def __getitem__(self, item: str):
         if item.upper() == "ELEMENT_SHAPE":
-            return tuple(ElementShape(s) for s in self._group["ELEMENT_SHAPE"])
+            return tuple(
+                ElementShape(s) for s in cast(h5py.Group, self._group["ELEMENT_SHAPE"])
+            )
         if item.upper() == "DEAD_ELEMENT":
-            return tuple(bool(e) for e in self._group["DEAD_ELEMENT"])
+            return tuple(bool(e) for e in cast(h5py.Group, self._group["DEAD_ELEMENT"]))
         else:
             return super().__getitem__(item)
 

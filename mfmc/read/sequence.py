@@ -4,8 +4,7 @@ import datetime
 import enum
 import functools
 from collections.abc import Iterator
-
-from typing import Any, Literal, overload
+from typing import Any, Literal, cast, overload
 
 import h5py
 import numpy as np
@@ -72,9 +71,15 @@ class Sequence(_group.Group):
     def __getitem__(self, item: str):
         match item.upper():
             case "TRANSMIT_LAW" | "RECEIVE_LAW" as field_name:
-                return tuple(law.Law(l) for l in self._group[field_name])
+                return tuple(
+                    law.Law(cast(h5py.Group, l))
+                    for l in cast(h5py.Group, self._group[field_name])
+                )
             case "PROBE_LIST":
-                return tuple(probe.Probe(p) for p in self._group["PROBE_LIST"])
+                return tuple(
+                    probe.Probe(cast(h5py.Group, p))
+                    for p in cast(h5py.Group, self._group["PROBE_LIST"])
+                )
             case "FILTER_TYPE":
                 try:
                     return FilterType(self._group["FILTER_TYPE"])
@@ -82,7 +87,9 @@ class Sequence(_group.Group):
                     raise _exceptions.OptionalDatafieldError("FILTER_TYPE")
             case "DATE_AND_TIME":
                 try:
-                    return datetime.datetime.fromisoformat(self._group["DATE_AND_TIME"])
+                    return datetime.datetime.fromisoformat(
+                        cast(h5py.Dataset, self._group)["DATE_AND_TIME"]
+                    )
                 except KeyError:
                     raise _exceptions.OptionalDatafieldError("DATE_AND_TIME")
 
@@ -131,8 +138,8 @@ class Sequence(_group.Group):
         if normalise:
             data = np.asarray(data, np.float32) / self.norm_divisor
 
-        transmit = law.Law(self["transmit_law"][index])
-        receive = law.Law(self["receive_law"][index])
+        transmit = law.Law(cast(h5py.Dataset, self["transmit_law"])[index])
+        receive = law.Law(cast(h5py.Dataset, self["receive_law"])[index])
         return _types.AScan(data, transmit, receive)
 
     def ascan_iterator(self) -> Iterator[_types.AScan]:
